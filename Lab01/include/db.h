@@ -86,7 +86,7 @@ void node_add_tail(struct oo_node *head, struct oo_node *node);
  *  list.
  *
  * @param head  The sentinel head of the list.
- * @param node  The abstract node to add.
+ * @pmram node  The abstract node to add.
  */
 void node_add_head(struct oo_node *head, struct oo_node *node);
 

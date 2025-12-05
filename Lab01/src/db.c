@@ -28,10 +28,19 @@ void
 node_rm_node(struct oo_node *node)
 {
   // TODO: Add your code here...
+  struct oo_node *prev = node->prev;
+  struct oo_node *next = node->next;
+  
+
+  prev->next = next;
+  next->prev = prev;
+
+  node->next = node->prev = node;
 }
 
 // This is a helper function, feel free to keep it here or remove it if you do
 // not have a need for it.
+/*
 static void
 _node_add(struct oo_node *left, struct oo_node *node)
 {
@@ -40,7 +49,7 @@ _node_add(struct oo_node *left, struct oo_node *node)
   node->prev       = left;
   left->next       = node;
 }
-
+*/
 /**
  * Implementation of node_add_tail
  */
@@ -48,6 +57,13 @@ void
 node_add_tail(struct oo_node *head, struct oo_node *node)
 {
   // TODO: Add your code here..
+  struct oo_node *last = head->prev;
+
+  head->prev = node;
+  last->next = node;
+
+  node->prev = last;
+  node->next = head;
 }
 
 /**
@@ -57,6 +73,13 @@ void
 node_add_head(struct oo_node *head, struct oo_node *node)
 {
   // TODO: Add your code here..
+  struct oo_node *first = head->next;
+
+  head->next = node;
+  first->prev = node;
+
+  node->next = first;
+  node->prev = head;
 }
 
 /**
@@ -83,7 +106,15 @@ node_to_dbulong(struct oo_node *node)
 void
 db_add_record(struct db *db, struct oo_node *node)
 {
-  // TODO: Add your code here...
+  if (!db || !node) {
+    return;
+  }
+
+  // Insert the record at the tail of the list
+  node_add_tail(&db->head, node);
+
+  // Increase record count
+  db->rcount++;
 }
 
 /**
@@ -143,4 +174,27 @@ int
 searching_seek_and_destroy(struct db *db, unsigned long value)
 {
   // TODO: Add your code here....
+  if(!db){
+    return -1;
+  }
+
+  int removed = 0;
+  struct oo_node *n = db->head.next;
+
+  while(n != &db->head){
+    struct oo_node *next = n->next;
+    struct db_ulong *record = node_to_dbulong(n);
+
+    if(record->value == value){
+      node_rm_node(n);
+
+
+      db->rcount--;
+      removed++;
+    }
+
+    n = next;
+  }
+
+  return removed;
 }

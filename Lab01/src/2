@@ -89,10 +89,9 @@ vec_pop_back(struct vector *vec)
   if(!vec || vec->len == 0) {
     return (unsigned int)-1; // doesn't matter what we return.
   }
-  unsigned int temp = vec->data[vec->len - 1];
-  vec->data[vec->len - 1] = 0;
-  vec->len--;
-  printf("x = %d\nlen = %ld\n", *vec->data, vec->len);
+  unsigned int temp = vec->data[vec->len];
+  vec->data[vec->len] = 0;
+  printf("x = %d\n", *vec->data);
   // TODO: Add your code here....
   return temp;
 }
@@ -108,8 +107,7 @@ vec_elem_at(struct vector *vec, unsigned int i)
   }
 
   // TODO: Add your code here...
-  
-  return vec->data[i];
+  return 0;
 }
 
 /**
@@ -121,7 +119,7 @@ vec_set_at(struct vector *vec, unsigned int i, unsigned int elem)
   if(!vec || i >= vec->len) {
     return -1;
   }
-  vec->data[i] = elem;
+
   // TODO: Add your code here...
-  return 0;
+  return -1;
 }
