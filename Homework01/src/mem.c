@@ -7,7 +7,7 @@
  * @date   <Date last modified>
  */
 #include <stdio.h>
-#include <stdchar.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "mem.h"
