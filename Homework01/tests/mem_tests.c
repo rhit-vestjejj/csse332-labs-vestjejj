@@ -120,38 +120,49 @@ test_getint(void)
   size_t len        = sizeof(array) / sizeof(array[0]);
   int *p            = 0;
   int i, res;
-
+  
   mem = getmem(0, len);
   p   = getintptr(mem);
+  
 
+  printf("%p  \n", p);
+  printf("%p  \b", mem);
+  printf("%d   te\n", getni(mem)); 
   // make sure we return a non-null pointer.
   CG_ASSERT_PTR_NNUL(p);
 
   // fill in the values.
   memcpy(p, array, len * sizeof(int));
+  
+  
+  printf("%d   te\n", getni(mem)); 
   CG_ASSERT_MSG(!memcmp(array, getintptr(mem), len * sizeof(int)),
                 "Check that copying data over into the memory area actually "
                 "results in updates to that area.");
-
   // test the setters and getters
+  
+  printf("%p   testing1\n\n", mem);
   for(i = 0; i < len; i++) {
     getint_at(mem, i, &res);
+    printf("%p  ea\n", mem);
+    printf("%d + %di\n", res, i);
     CG_ASSERT_INT_EQ_MSG(array[i], res,
                          "Check that get_element_at %d returns the right value",
                          i);
   }
-
+  printf("testing2\n\n");
   // check that getter should fail for incorrect index.
   res = getint_at(mem, len, 0);
   CG_ASSERT_INT_EQ_MSG(-1, res,
                        "Check that invalid index is reported as error.");
-
+  printf("testing3\n\n");
   // test setters
   res = setint_at(mem, 2, 100);
   CG_ASSERT_INT_EQ_MSG(100, p[2],
                        "Check that changing the value at index 2 takes effect");
-  CG_ASSERT_INT_EQ_MSG(0, res, "Check that setint_at returns 0 on success.")
+  CG_ASSERT_INT_EQ_MSG(0, res, "Check that setint_at returns 0 on success.");
 
+  printf("testing4\n\n");
   // test setter with invalid
   res = setint_at(mem, len, 500);
   CG_ASSERT_INT_EQ_MSG(-1, res,

@@ -7,7 +7,7 @@
  * @date   <Date last modified>
  */
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdchar.h>
 #include <string.h>
 
 #include "mem.h"
@@ -21,8 +21,11 @@
 void *
 getmem(int nc, int ni)
 {
-  // TODO: Add your code here...
-  return 0;
+  // TODO: Add your code hr
+  int *p =  malloc(nc * 1 + ni * 4 + 8);  
+  p[0] = nc;
+  p[1] = ni;
+  return (void *)p;
 }
 
 /**
@@ -32,6 +35,7 @@ void
 freemem(void *mem)
 {
   // TODO: Add your code here...
+  free(mem);
 }
 
 /**
@@ -41,7 +45,8 @@ int
 getnc(void *mem)
 {
   // TODO: Add your code here...
-  return -1;
+  int *p = (int *) mem;
+  return p[0];
 }
 
 /**
@@ -51,7 +56,8 @@ int
 getni(void *mem)
 {
   // TODO: Add your code here...
-  return -1;
+  int *p = (int *) mem;
+  return p[1];
 }
 
 /**
@@ -61,7 +67,8 @@ char *
 getstr(void *mem)
 {
   // TODO: Add your code here...
-  return 0;
+  
+  return mem + 8;
 }
 
 /**
@@ -71,7 +78,7 @@ int *
 getintptr(void *mem)
 {
   // TODO: Add your code here...
-  return 0;
+  return mem + 8 + getnc(mem);
 }
 
 /**
@@ -81,7 +88,11 @@ int
 getint_at(void *mem, int idx, int *res)
 {
   // TODO: Add your code here...
-  return -1;
+  if(idx >= getni(mem) || idx < 0){
+    return -1;
+  }
+  memcpy(res, (char *)getintptr(mem) + idx * 4, sizeof(int));
+  return (((int *)mem)[8 + idx * 4 + getnc(mem)] == res[0] ? 1 : 0);
 }
 
 /**
@@ -91,7 +102,12 @@ int
 setint_at(void *mem, int idx, int val)
 {
   // TODO: Add your code here...
-  return -1;
+  memcpy((char *)getintptr(mem) + idx * 4, &val, sizeof(int));
+  return (((char *)getintptr(mem) + idx * 4)[0] == val ? 0 : -1);
+}
+
+int min(int a, int b){
+  return (a < b) ? a: b;
 }
 
 /**
@@ -101,5 +117,7 @@ size_t
 cpstr(void *mem, const char *str, size_t len)
 {
   // TODO: Add your code here...
-  return 0;
+  char *p = (char *) mem;
+  memcpy(p+8, str, getnc(mem)); 
+  return (size_t) min(getnc(mem), (int) len + 1);
 }
