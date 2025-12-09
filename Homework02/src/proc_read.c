@@ -11,12 +11,14 @@
 #include <errno.h>
 #include <stdlib.h>
 
+
 static void *
 __get_ptr_from_str(const char *str)
 {
   unsigned long long addr;
 
   errno = 0;
+
   addr  = strtoull(str, 0, 16);
   if(errno) {
     perror("strtoull: ");
@@ -28,7 +30,7 @@ __get_ptr_from_str(const char *str)
 int
 open_pmaps_file(struct program_info *pinfo, pid_t pid)
 {
-  // TODO: REMOVE THIS BEFORE STARTING, THIS IS TO SILENCE COMPILER WARNINGS
+  // Test TODO: REMOVE THIS BEFORE STARTING, THIS IS TO SILENCE COMPILER WARNINGS
   (void)__get_ptr_from_str("fe");
   return 0;
 }
