@@ -87,12 +87,12 @@ getintptr(void *mem)
 int
 getint_at(void *mem, int idx, int *res)
 {
-  // TODO: Add your code here...
+  // TODO: Add your code here...	
   if(idx >= getni(mem) || idx < 0){
     return -1;
   }
-  memcpy(res, (char *)getintptr(mem) + idx * 4, sizeof(int));
-  return (((int *)mem)[8 + idx * 4 + getnc(mem)] == res[0] ? 1 : 0);
+  memcpy(res, getintptr(mem) + idx, sizeof(int));
+  return 0;
 }
 
 /**
@@ -102,8 +102,13 @@ int
 setint_at(void *mem, int idx, int val)
 {
   // TODO: Add your code here...
-  memcpy((char *)getintptr(mem) + idx * 4, &val, sizeof(int));
-  return (((char *)getintptr(mem) + idx * 4)[0] == val ? 0 : -1);
+  
+  if(idx >= getni(mem) || idx < 0){
+    return -1;
+  }
+	
+  memcpy(getintptr(mem) + idx, &val, sizeof(int));
+  return 0;
 }
 
 int min(int a, int b){
@@ -119,5 +124,5 @@ cpstr(void *mem, const char *str, size_t len)
   // TODO: Add your code here...
   char *p = (char *) mem;
   memcpy(p+8, str, getnc(mem)); 
-  return (size_t) min(getnc(mem), (int) len + 1);
+  return (size_t) min(getnc(mem), (int) len + 1 );
 }
