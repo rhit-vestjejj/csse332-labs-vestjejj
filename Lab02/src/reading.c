@@ -6,7 +6,7 @@
  * @author <Your name>
  * @date   <Date last modified>
  */
-
+#include <time.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -42,8 +42,29 @@ get_file_size(int fd)
 ssize_t
 read_bytes(int fd, char *buf, ssize_t len, size_t incr)
 {
-  // TODO: Complete this with your instructor
-  return 0;
+  // TODO: Complete this with your instructor	
+  char *p = buf;
+  ssize_t num_bytes_read = 0;
+  int rc;
+
+  while(len > 0){
+    rc = read(fd, p, incr);
+    if(rc == 0){
+	break;
+    } else if (rc > 0){
+	p += rc;
+	len -= rc;
+	num_bytes_read += rc;
+    } else {
+	if(errno == EINTR){
+	  continue;
+	} else {
+	  perror("read");
+	  return -1;
+	}
+    }
+  }
+  return num_bytes_read;
 }
 
 static double
@@ -71,10 +92,9 @@ _main(int argc, char **argv)
   ssize_t fsize;
   ssize_t blk              = 1;
   struct timespec ts_start = {0, 0}, ts_end = {0, 0};
-
+  char *buf;
   // TODO: Please comment out this line when you implement the last step in
   // this file.
-  (void)_subtract_timspec(ts_start, ts_end);
 
   if(argc > 1) {
     errno = 0;
@@ -103,7 +123,8 @@ _main(int argc, char **argv)
   // TODO:
   // =====
   //  Add code here to read all of the bytes of the input file fd.
-
+  
+  
   // HINT:
   // =====
   // To measure time and print it, use the following:
@@ -111,7 +132,7 @@ _main(int argc, char **argv)
   // Add #include <time.h> if it's not there.
   //
 
-  // clock_gettime(CLOCK_MONOTONIC, &ts_start);
+     clock_gettime(CLOCK_MONOTONIC, &ts_start);
   //
   //   THING YOU'D LIKE TO MEASURE HERE
   //
@@ -120,10 +141,23 @@ _main(int argc, char **argv)
   //    PLEASE USE THE SAME FPRINTF STATEMENT BELOW AS THE GRADING SCRIPT
   //    DEPENDS ON IT.
   //
-  // clock_gettime(CLOCK_MONOTONIC, &ts_end);
-  // fprintf(stderr, "%lf seconds time elapsed\n",
-  //         _subtract_timspec(ts_end, ts_start));
-
+     buf = malloc(fsize);
+     if (!buf) {
+	perror("malloc");
+	printf("PANIC: Malloc failed\n");
+	exit(EXIT_FAILURE);
+     }
+     
+     ssize_t br = read_bytes(fd, buf, fsize, blk);
+     if(br < 0){
+	fprintf(stderr, "[ERROR] read_bytes failed for some reason!\n");
+	free(buf);
+	exit(EXIT_FAILURE);
+     }
+     clock_gettime(CLOCK_MONOTONIC, &ts_end);
+     fprintf(stderr, "%lf seconds time elapsed\n",
+             _subtract_timspec(ts_end, ts_start));
+  free(buf);
   close(fd);
   return rc;
 }

@@ -22,6 +22,7 @@ open_stream(const char *name)
   return fopen(name, "r");
 }
 
+	
 ssize_t
 get_stream_size(FILE *fp)
 {
@@ -45,7 +46,17 @@ ssize_t
 stream_read_bytes(FILE *fp, char *buf, ssize_t len, size_t incr)
 {
   // TODO: Complete this step for the lab.
-  return 0;
+  char *p = buf;
+  ssize_t num_bytes_read = 0;
+  int rc = 0;
+
+  while((rc = fread(p, 1, incr, fp)) != 0){
+	p += rc;
+	len -= rc;
+	num_bytes_read += rc;
+  }
+
+  return num_bytes_read;
 }
 
 static double
@@ -74,9 +85,9 @@ _main(int argc, char **argv)
   ssize_t fsize            = 0;
   struct timespec ts_start = {0, 0}, ts_end = {0, 0};
 
+  char *buf;
   // TODO: Please comment out this line when you implement the last step in
   // this file.
-  (void)_subtract_timspec(ts_start, ts_end);
 
   if(argc > 1) {
     errno = 0;
@@ -112,18 +123,30 @@ _main(int argc, char **argv)
   // Add #include <time.h> if it's not there.
   //
 
-  // clock_gettime(CLOCK_MONOTONIC, &ts_start);
+   clock_gettime(CLOCK_MONOTONIC, &ts_start);
   //
   //   THING YOU'D LIKE TO MEASURE HERE
   //
   // TODO:
   // =====
   //    PLEASE USE THE SAME FPRINTF STATEMENT BELOW AS THE GRADING SCRIPT
-  //    DEPENDS ON IT.
+  buf = malloc(fsize);
+  if (!buf) {
+     perror("malloc");
+     printf("PANIC: Malloc failed\n");
+     exit(EXIT_FAILURE);
+  }
   //
-  // clock_gettime(CLOCK_MONOTONIC, &ts_end);
-  // fprintf(stderr, "%lf seconds time elapsed\n",
-  //         _subtract_timspec(ts_end, ts_start));
+  ssize_t br = stream_read_bytes(stream, buf, fsize, blk);
+  if(br < 0){
+     fprintf(stderr, "[ERROR] read_bytes failed for some reason!\n");
+     free(buf);
+     exit(EXIT_FAILURE);
+  }
+  
+  clock_gettime(CLOCK_MONOTONIC, &ts_end);
+  fprintf(stderr, "%lf seconds time elapsed\n",
+          _subtract_timspec(ts_end, ts_start));
 
   fclose(stream);
   return rc;
